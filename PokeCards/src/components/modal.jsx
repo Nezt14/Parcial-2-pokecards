@@ -25,7 +25,7 @@ function Modal({ pokemon, cerrar, onComprar }) {
         <PayPalButton
           monto={precio}
           onSuccess={() => {
-            onComprar(pokemon.id); // 👈 guardar compra
+            onComprar(pokemon.id);
             cerrar();
           }}
         />

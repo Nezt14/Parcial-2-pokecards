@@ -69,13 +69,12 @@ function App() {
               key={pokemon.id}
               pokemon={pokemon}
               comprado={compradas.includes(pokemon.id)}
-              onClick={() => setPokemonSeleccionado(pokemon)} // ✅ ahora sí
+              onClick={() => setPokemonSeleccionado(pokemon)}
             />
           ))}
         </main>
       )}
 
-      {/* 🧾 PANEL DE COMPRA */}
       {pokemonSeleccionado && (
         <div className="panel-compra">
 
