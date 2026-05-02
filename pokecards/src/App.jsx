@@ -1,122 +1,128 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from "react";
+import { usePokemon } from "./hooks/usePokemon";
+import { PokemonCard } from "./components/pokemonCard";
+import { SearchBar } from "./components/searchBar";
+import Boton from "./components/buttonInteract";
+import PayPalButton from "./components/PayPalButton";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { pokemonList, loading, error } = usePokemon(25);
+  const [ultimaCompra, setUltimaCompra] = useState(null);
+  const [search, setSearch] = useState("");
+  const [tipoSeleccionado, setTipoSeleccionado] = useState("todos");
+  const [pokemonSeleccionado, setPokemonSeleccionado] = useState(null);
+  const [mensaje, setMensaje] = useState("");
+  const [compradas, setCompradas] = useState(() => {
+    const saved = localStorage.getItem("compradas");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const agregarCompra = (id) => {
+    if (!compradas.includes(id)) {
+      const nuevas = [...compradas, id];
+      setCompradas(nuevas);
+      localStorage.setItem("compradas", JSON.stringify(nuevas));
+    }
+  };
+
+  const tipos = [
+    "todos", "fire", "water", "grass", "electric", "psychic", "ice", "dragon",
+    "dark", "fairy", "normal", "fighting", "flying", "poison", "ground",
+    "rock", "bug", "ghost", "steel"
+  ];
+
+  const filtered = pokemonList.filter((p) =>
+    p.name.toLowerCase().includes(search.toLowerCase()) &&
+    (tipoSeleccionado === "todos" ||
+      p.types.some((t) => t.type.name === tipoSeleccionado))
+  );
+
+  if (error) return <p className="error">Error: {error}</p>;
+
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
+    <div className="app">
+      <header>
+        <h1>PokéCards Market</h1>
+        <SearchBar value={search} onChange={setSearch} />
+        {mensaje && <div className="mensaje-exito">{mensaje}</div>}
+      </header>
+
+      <div className="filtros">
+        {tipos.map((tipo) => (
+          <Boton
+            key={tipo}
+            tipo={tipo}
+            setTipoSeleccionado={setTipoSeleccionado}
+            activo={tipoSeleccionado === tipo}
+          />
+        ))}
+      </div>
+
+      {loading ? (
+        <div className="loading">Cargando Pokémon...</div>
+      ) : (
+        <main className="grid">
+          {filtered.map((pokemon) => (
+            <PokemonCard
+              key={pokemon.id}
+              pokemon={pokemon}
+              comprado={compradas.includes(pokemon.id)}
+              onClick={() => setPokemonSeleccionado(pokemon)} // ✅ ahora sí
+            />
+          ))}
+        </main>
+      )}
+
+      {/* 🧾 PANEL DE COMPRA */}
+      {pokemonSeleccionado && (
+        <div className="panel-compra">
+
+          <h2>{pokemonSeleccionado.name}</h2>
+
           <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+            Tipo:{" "}
+            {pokemonSeleccionado.types?.map(t => t.type.name).join(", ")}
           </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
 
-      <div className="ticks"></div>
+          <p>
+            Precio: ${pokemonSeleccionado.base_experience || 50}
+          </p>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          <div className="acciones-compra">
+            {!compradas.includes(pokemonSeleccionado.id) ? (
+              <div className="paypal-wrapper">
+                <PayPalButton
+                  monto={(pokemonSeleccionado.base_experience || 50).toFixed(2)}
+                  onSuccess={() => {
+                    agregarCompra(pokemonSeleccionado.id);
+                    setPokemonSeleccionado(null);
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+                    setMensaje("✅ Pago exitoso");
+
+                    setTimeout(() => {
+                      setMensaje("");
+                    }, 3000);
+                  }}
+                />
+              </div>
+            ) : (
+              <span className="comprado">✔ Ya comprado</span>
+            )}
+
+            <button
+              className="btn-cerrar"
+              onClick={() => setPokemonSeleccionado(null)}
+            >
+              Cerrar
+            </button>
+          </div>
+
+        </div>
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
