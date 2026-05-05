@@ -6,10 +6,12 @@ correo: sb-vxsvb50960956@personal.example.com
 
 contraseña: PkE#4O4%
 
-comandos en orden para ejecutar el sitio wev
--primero-
+comandos en orden para ejecutar el sitio web
+-primero
+
 cd .\PokeCards\
 -segundo
+
 npm run dev
 
 Pasos para comprar 
