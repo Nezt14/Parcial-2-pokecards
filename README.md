@@ -6,15 +6,15 @@ correo: sb-vxsvb50960956@personal.example.com
 
 contraseña: PkE#4O4%
 
-comandos en orden para ejecutar el sitio web
--primero
+comandos en orden para ejecutar el sitio web.
 
+-primero.
 cd .\PokeCards\
--segundo
 
+-segundo.
 npm run dev
 
-Pasos para comprar 
+Pasos para comprar:
 
 paso 1.
 seleccionas la carta que desea comprar
